@@ -1,0 +1,219 @@
+@startuml
+' Mostrar tablas como entidades
+hide circle
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor<<FK>> LightYellow
+}
+
+' -----------------------
+' Usuarios y Roles
+' -----------------------
+
+entity Users {
+  * id : bigint
+  --
+  telefono : text
+  nombre : text
+  apellido : text
+  ordeno : boolean
+  reservo : boolean
+  isthereadid : boolean
+  theread_id : text
+  password : text
+  isactivo : boolean
+  isdeleted : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity Roles {
+  * id : bigint
+  --
+  name : text
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity UserRoles {
+  * user_id : bigint
+  * role_id : bigint
+}
+
+Users ||..o{ UserRoles : "PK/FK"
+Roles ||..o{ UserRoles : "PK/FK"
+
+' -----------------------
+' Productos e Inventario
+' -----------------------
+
+entity Categorias {
+  * id : bigint
+  --
+  nombre : text
+  descripcion : text
+  isdeleted : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity Items {
+  * id : bigint
+  --
+  nombre : text
+  descripcion : text
+  categoria_id : bigint <<FK>>
+  tipo : text
+  precio : numeric
+  unidad : text
+  calificacion : numeric
+  numcalificaciones : int
+  user_id : bigint <<FK>>
+  inventario : int
+  isactivo : boolean
+  isdeleted : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity Opiniones {
+  * id : bigint
+  --
+  item_id : bigint <<FK>>
+  nombre : text
+  calificacion : numeric
+  comentario : text
+}
+
+entity Kardex {
+  * id : bigint
+  --
+  cantidad : int
+  item_id : bigint <<FK>>
+  descripcion : text
+  fecha : timestamp
+}
+
+Categorias ||--o{ Items
+Users ||--o{ Items
+Items ||--o{ Opiniones
+Items ||--o{ Kardex
+
+' -----------------------
+' Reservas
+' -----------------------
+
+entity Reservas {
+  * id : bigint
+  --
+  total : numeric
+  observacion : text
+  estado : text
+  user_id : bigint <<FK>>
+  isdeleted : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity Bloques {
+  * id : bigint
+  --
+  fecha : text
+  start_time : text
+  end_time : text
+  estado : text
+  reserva_id : bigint <<FK>>
+  isdeleted : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity ReservaItems {
+  * reserva_id : bigint
+  * item_id : bigint
+}
+
+Users ||--o{ Reservas
+Reservas ||--o{ Bloques
+Reservas ||..o{ ReservaItems : "PK/FK"
+Items ||..o{ ReservaItems : "PK/FK"
+
+' -----------------------
+' Órdenes
+' -----------------------
+
+entity Ordenes {
+  * id : bigint
+  --
+  user_id : bigint <<FK>>
+  observacion : text
+  total : numeric
+  estado : text
+  tipo : text
+  direccion : text
+  fechaenvio : timestamp
+  fechaentrega : timestamp
+  isdeleted : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity OrdenItems {
+  * orden_id : bigint
+  * item_id : bigint
+  --
+  cantidad : int
+}
+
+Users ||--o{ Ordenes
+Ordenes ||..o{ OrdenItems : "PK/FK"
+Items ||..o{ OrdenItems : "PK/FK"
+
+' -----------------------
+' Empresas y API
+' -----------------------
+
+entity Empresas {
+  * id : bigint
+  --
+  nombre : text
+  botstatus : text
+  created_at : timestamp
+}
+
+entity ApiTokens {
+  * id : bigint
+  --
+  empresa_id : bigint <<FK>>
+  token : numeric
+  created_at : timestamp
+}
+
+Empresas ||--o{ ApiTokens
+
+' -----------------------
+' IA y Difusión
+' -----------------------
+
+entity Difuciones {
+  * id : bigint
+  --
+  user_id : bigint <<FK>>
+  fecha : timestamp
+  mensaje : text
+  imagen : text
+}
+
+entity Seguimiento {
+  * id : bigint
+  --
+  user_id : bigint <<FK>>
+  tipo_accion : text
+  comentario : text
+  fecha : timestamp
+}
+
+Users ||--o{ Difuciones
+Users ||--o{ Seguimiento
+
+@enduml
