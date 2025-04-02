@@ -1,0 +1,215 @@
+@startuml
+' Configuración visual
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' -----------------------
+' Grupo: Usuarios y Roles
+' -----------------------
+
+package "Usuarios y Roles" {
+  class Users {
+    +id: bigint
+    +telefono: text
+    +nombre: text
+    +apellido: text
+    +ordeno: boolean
+    +reservo: boolean
+    +isthereadid: boolean
+    +theread_id: text
+    +password: text
+    +isactivo: boolean
+    +isdeleted: boolean
+    +created_at: timestamp
+    +updated_at: timestamp
+  }
+
+  class Roles {
+    +id: bigint
+    +name: text
+    +created_at: timestamp
+    +updated_at: timestamp
+  }
+
+  class UserRoles {
+    +user_id: bigint
+    +role_id: bigint
+  }
+
+  Users "1" --> "0..*" UserRoles : tiene >
+  Roles "1" --> "0..*" UserRoles : pertenece >
+}
+
+' -----------------------
+' Grupo: Productos e Inventario
+' -----------------------
+
+package "Inventario y Productos" {
+  class Categorias {
+    +id: bigint
+    +nombre: text
+    +descripcion: text
+    +isdeleted: boolean
+    +created_at: timestamp
+    +updated_at: timestamp
+  }
+
+  class Items {
+    +id: bigint
+    +nombre: text
+    +descripcion: text
+    +categoria_id: bigint
+    +tipo: text
+    +precio: numeric
+    +unidad: text
+    +calificacion: numeric
+    +numcalificaciones: int
+    +user_id: bigint
+    +inventario: int
+    +isactivo: boolean
+    +isdeleted: boolean
+    +created_at: timestamp
+    +updated_at: timestamp
+  }
+
+  class Opiniones {
+    +id: bigint
+    +item_id: bigint
+    +nombre: text
+    +calificacion: numeric
+    +comentario: text
+  }
+
+  class Kardex {
+    +id: bigint
+    +cantidad: int
+    +item_id: bigint
+    +descripcion: text
+    +fecha: timestamp
+  }
+
+  Categorias "1" --> "0..*" Items : contiene >
+  Items "1" --> "0..*" Opiniones : tiene >
+  Items "1" --> "0..*" Kardex : registra >
+  Users "1" --> "0..*" Items : ofrece >
+}
+
+' -----------------------
+' Grupo: Reservas
+' -----------------------
+
+package "Reservas" {
+  class Reservas {
+    +id: bigint
+    +total: numeric
+    +observacion: text
+    +estado: text
+    +user_id: bigint
+    +isdeleted: boolean
+    +created_at: timestamp
+    +updated_at: timestamp
+  }
+
+  class Bloques {
+    +id: bigint
+    +fecha: text
+    +start_time: text
+    +end_time: text
+    +estado: text
+    +reserva_id: bigint
+    +isdeleted: boolean
+    +created_at: timestamp
+    +updated_at: timestamp
+  }
+
+  class ReservaItems {
+    +reserva_id: bigint
+    +item_id: bigint
+  }
+
+  Users "1" --> "0..*" Reservas : realiza >
+  Reservas "1" --> "0..*" Bloques : divide en >
+  Reservas "1" --> "0..*" ReservaItems : incluye >
+  Items "1" --> "0..*" ReservaItems : solicitado en >
+}
+
+' -----------------------
+' Grupo: Órdenes
+' -----------------------
+
+package "Órdenes" {
+  class Ordenes {
+    +id: bigint
+    +user_id: bigint
+    +observacion: text
+    +total: numeric
+    +estado: text
+    +tipo: text
+    +direccion: text
+    +fechaenvio: timestamp
+    +fechaentrega: timestamp
+    +isdeleted: boolean
+    +created_at: timestamp
+    +updated_at: timestamp
+  }
+
+  class OrdenItems {
+    +orden_id: bigint
+    +item_id: bigint
+    +cantidad: int
+  }
+
+  Users "1" --> "0..*" Ordenes : hace >
+  Ordenes "1" --> "0..*" OrdenItems : contiene >
+  Items "1" --> "0..*" OrdenItems : incluido en >
+}
+
+' -----------------------
+' Grupo: Empresa y API
+' -----------------------
+
+package "Integración y Empresa" {
+  class Empresas {
+    +id: bigint
+    +nombre: text
+    +botstatus: text
+    +created_at: timestamp
+  }
+
+  class ApiTokens {
+    +id: bigint
+    +empresa_id: bigint
+    +token: numeric
+    +created_at: timestamp
+  }
+
+  Empresas "1" --> "0..*" ApiTokens : usa >
+}
+
+' -----------------------
+' Grupo: Seguimiento y Difusión
+' -----------------------
+
+package "IA y Difusión" {
+  class Difuciones {
+    +id: bigint
+    +user_id: bigint
+    +fecha: timestamp
+    +mensaje: text
+    +imagen: text
+  }
+
+  class Seguimiento {
+    +id: bigint
+    +user_id: bigint
+    +tipo_accion: text
+    +comentario: text
+    +fecha: timestamp
+  }
+
+  Users "1" --> "0..*" Difuciones : recibe >
+  Users "1" --> "0..*" Seguimiento : es seguido por IA >
+}
+
+@enduml
